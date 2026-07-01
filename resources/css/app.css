@@ -1,10 +1,243 @@
-@import 'bootstrap';
-@import 'tailwindcss';
+/* Todo App */
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.todo-app {
+    --bg: #1A2029;
+    --surface: #2C3648;
+    --surface-alt: #323E52;
+    --text: #E8E6DE;
+    --text-muted: #94A0B4;
+    --border: #3A4557;
+    --amber: #E3A857;
+    --sage: #6FA287;
+    --clay: #C1666B;
+
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    box-sizing: border-box;
 }
+
+.todo-app * { box-sizing: border-box; }
+
+.window {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+}
+
+.window-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-red { background: var(--clay); }
+.dot-amber { background: var(--amber); }
+.dot-green { background: var(--sage); }
+
+.window-title {
+    margin-left: 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
+.window-body { padding: 1.5rem; }
+
+.prompt-form {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    transition: border-color 0.15s ease;
+}
+
+.prompt-form:focus-within { border-color: var(--amber); }
+
+.prompt-symbol {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--amber);
+    font-weight: 600;
+}
+
+.prompt-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92rem;
+}
+
+.prompt-input::placeholder { color: var(--text-muted); }
+
+.prompt-submit {
+    background: var(--amber);
+    color: #1A2029;
+    border: none;
+    border-radius: 5px;
+    padding: 0.35rem 0.7rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.prompt-submit:hover { opacity: 0.85; }
+.prompt-submit:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+.prompt-error {
+    margin-top: 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--clay);
+}
+
+.task-log {
+    list-style: none;
+    margin: 1.3rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.task-line {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.task-line:hover { background: var(--surface-alt); }
+
+.line-index {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    width: 1.4rem;
+    flex-shrink: 0;
+}
+
+.line-toggle {
+    position: relative;
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.line-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--text-muted);
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.line-toggle input:checked ~ .checkmark {
+    background: var(--sage);
+    border-color: var(--sage);
+}
+
+.line-toggle input:checked ~ .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 4px;
+    height: 9px;
+    border: solid #1A2029;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.line-toggle input:focus-visible ~ .checkmark {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+}
+
+.line-text {
+    flex: 1;
+    font-size: 0.92rem;
+    color: var(--text);
+    transition: color 0.2s ease;
+}
+
+.task-line.is-done .line-text {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--sage);
+}
+
+.line-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    opacity: 0;
+}
+
+.task-line:hover .line-delete { opacity: 1; }
+.line-delete:hover { color: var(--clay); background: rgba(193,102,107,0.1); }
+.line-delete:focus-visible { opacity: 1; outline: 2px solid var(--amber); }
+
+.task-empty {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 1.2rem 0.5rem;
+    text-align: center;
+}
+
+.status-bar {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.status-dot { color: var(--border); }
